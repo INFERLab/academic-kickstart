@@ -1,0 +1,45 @@
+{{ $ := .root }}
+{{ $page := .page }}
+{{ $funds_len := len (where $.Site.RegularPages "Type" "funding") }}
+
+<!-- Funding widget -->
+<div class="row">
+  <div class="col-xs-12 col-md-4 section-heading">
+    <h1>{{ with $page.Title }}{{ . | markdownify }}{{ end }}</h1>
+    {{ if gt $funds_len $page.Params.count }}
+    <p class="view-all">
+      <a href="{{ "/funding/" | relLangURL }}">
+        {{ i18n "more_fundings" | markdownify }}
+        <i class="fa fa-angle-double-right"></i>
+      </a>
+    </p>
+    {{ end }}
+  </div>
+  <div class="col-xs-12 col-md-8">
+    {{ with $page.Content }}<p>{{ . | markdownify }}</p>{{ end }}
+
+    {{ if and ($page.Params.funding_type) (ne $page.Params.funding_type "-1") }}
+      {{ $.Scratch.Set "fundings" (where (where $.Site.RegularPages "Type" "funding") ".Params.funding_type" "intersect" (slice $page.Params.funding_type)) }}
+    {{ else }}
+      {{ $.Scratch.Set "funding" (where $.Site.RegularPages "Type" "funding") }}
+    {{ end }}
+
+    {{ if $page.Params.exclude_selected }}
+      {{ $.Scratch.Set "funding" ( ($.Scratch.Get "funding") | intersect (where (where $.Site.RegularPages "Type" "funding") ".Params.selected" "!=" true) ) }}
+    {{ end }}
+
+    {{ $funding := $.Scratch.Get "funding" }}
+    {{ range first $page.Params.count $funding }}
+      {{ if eq $page.Params.list_format 1 }}
+        {{ partial "funding_li_detailed" . }}
+      {{ else if eq $page.Params.list_format 2 }}
+        {{ partial "funding_li_apa" . }}
+      {{ else if eq $page.Params.list_format 3 }}
+        {{ partial "funding_li_mla" . }}
+      {{ else }}
+        {{ partial "funding_li_simple" . }}
+      {{ end }}
+    {{ end }}
+
+  </div>
+</div>

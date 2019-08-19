@@ -1,0 +1,97 @@
+{{ partial "header.html" . }}
+{{ partial "navbar.html" . }}
+<div class="pub" itemscope itemtype="http://schema.org/CreativeWork">
+
+  {{ partial "header_image.html" . }}
+
+  <div class="article-container">
+    <h1 itemprop="name">{{ .Title }}</h1>
+    <span class="agency" itemprop="agency">
+      Agency: {{ with .Params.agency }}
+      {{ delimit . ", " | markdownify }}
+      {{ end }}
+    </span>
+
+    <div class="space-below"></div>
+
+    {{ if .Params.image }}
+    <img src="{{ "/img/" | relURL }}{{ .Params.image }}" class="pub-banner" itemprop="image">
+    {{end}}
+
+    {{ if (.Params.funding_types) and (ne (index .Params.funding_types 0) "0") }}
+    <div class="row">
+      <div class="col-sm-1"></div>
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="col-xs-12 col-sm-3 pub-row-heading">{{ i18n "funding_types" }}</div>
+          <div class="col-xs-12 col-sm-9">
+            {{ range $index, $fundingtype := .Params.funding_types }}
+            <a href="{{ "/funding/" | relLangURL }}#{{ . | urlize }}">
+              {{ index $.Site.Params.funding_types (int .) }}
+            </a>
+            {{ end }}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-1"></div>
+    </div>
+    <div class="visible-xs space-below"></div>
+    {{ end }}
+
+    <div class="row">
+      <div class="col-sm-1"></div>
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="col-xs-12 col-sm-3 pub-row-heading">{{ i18n "date" }}</div>
+          <div class="col-xs-12 col-sm-9" itemprop="datePublished">
+            {{ .Params.start_end  }}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-1"></div>
+    </div>
+    <div class="visible-xs space-below"></div>
+
+    {{ if .Params.url_custom }}
+    <div class="row" style="padding-top: 10px">
+      <div class="col-sm-1"></div>
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="col-xs-12 col-sm-3 pub-row-heading" style="line-height:34px;">{{ i18n "links" }}</div>
+          <div class="col-xs-12 col-sm-9">
+            {{ partial "funding_links" (dict "content" . "is_list" 0) }}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-1"></div>
+    </div>
+    <div class="visible-xs space-below"></div>
+    {{ end }}
+
+    {{ if .Params.award_no }}
+    <div class="row">
+      <div class="col-sm-1"></div>
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="col-xs-12 col-sm-3 pub-row-heading">{{ i18n "award_no" }}</div>
+          <div class="col-xs-12 col-sm-9" itemprop="award_no">
+            {{ .Params.award_no  }}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-1"></div>
+    </div>
+    <div class="visible-xs space-below"></div>
+    {{ end }}
+
+    <div class="visible-xs space-below"></div>
+
+    <div class="space-below"></div>
+
+    {{ partial "tags.html" . }}
+
+  </div>
+</div>
+
+{{ partial "footer_container.html" . }}
+{{ partial "footer.html" . }}
